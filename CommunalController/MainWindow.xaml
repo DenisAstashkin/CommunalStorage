@@ -5,8 +5,132 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CommunalController"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" MinHeight="450" MinWidth="900">
     <Grid>
 
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.5*"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="0.25*"/>
+        </Grid.RowDefinitions>
+        
+        <ListView x:Name="IdStore" Grid.Row="0" Grid.Column="0" Margin="5" ItemsSource="{Binding Ids}" FontSize="15">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Код квитанции"/>
+                </GridView>
+            </ListView.View>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <EventSetter Event="PreviewMouseLeftButtonDown" Handler="ListViewItem_PreviewMouseLeftButtonDown" />
+                </Style>
+            </ListView.ItemContainerStyle>
+        </ListView>
+
+        <Grid Grid.Row="1" Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Button Grid.Column="0" Content="Удалить" Click="Button_Delete" Style="{StaticResource btnStyle}"/>
+            <Button Grid.Column="1" Content="Заполнить платежи" Click="Button_AddTable" Style="{StaticResource btnStyle}"/>
+            <Button Grid.Column="2" Content="Добавить" Click="Button_Add" Style="{StaticResource btnStyle}"/>
+            <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Content="Подвод Статистики" Click="ShowStatic" Style="{StaticResource btnStyle}"/>
+        </Grid>
+
+        <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.4*"/>
+                <RowDefinition/>
+                <RowDefinition Height="0.2*"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2.3*"/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.2*"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+
+                <Label Grid.Row="0" Grid.Column="0" Content="ФИО: "/>
+                <TextBox x:Name="FullName" Grid.Row="0" Grid.Column="1"/>
+
+
+                <Label Grid.Row="1" Grid.Column="0" Content="Адрес: "/>
+                <TextBox x:Name="Address" Grid.Row="1" Grid.Column="1"/>
+
+
+                <Label Grid.Row="2" Grid.Column="0" Content="УИН: "/>
+                <TextBox x:Name="IdStorage" Grid.Row="2" Grid.Column="1"/>
+
+
+
+                <Label Grid.Row="4" Grid.Column="0" Content="Дата создания: "/>
+                <TextBox x:Name="DateCreate" Grid.Row="4" Grid.Column="1"/>
+
+
+            </Grid>
+
+            <ListView Name="DataCommunal" Grid.Row="1" Grid.ColumnSpan="3" Style="{StaticResource communalView}">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn DisplayMemberBinding="{Binding Path=TypeOfPayment}" Width="140">Вид платежа</GridViewColumn>
+                        <GridViewColumn DisplayMemberBinding="{Binding Path=Size}" Width="140">Количество</GridViewColumn>
+                        <GridViewColumn DisplayMemberBinding="{Binding Path=Rate}" Width="140">Тариф</GridViewColumn>
+                        <GridViewColumn DisplayMemberBinding="{Binding Path=Accrued}" Width="140">Начислено</GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+
+            <Grid Grid.Row="2" Grid.Column="0">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.4*"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="Дата оплаты: " Style="{StaticResource info}"/>
+                <TextBox Grid.Column="1" x:Name="DatePay" Margin="10"/>
+            
+            </Grid>
+
+            <Grid Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2">
+                
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.4*"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="Итог: " Margin="0" Style="{StaticResource info}"/>
+                <TextBlock Grid.Column="1" x:Name="TotalCost" Margin="0" Style="{StaticResource info}"/>
+            </Grid>
+
+        </Grid>
     </Grid>
 </Window>
