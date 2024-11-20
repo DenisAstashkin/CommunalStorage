@@ -14,15 +14,22 @@
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.4*"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="0.45*"/>
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <ScottPlot:WpfPlot Grid.Row="0" Grid.ColumnSpan="2" x:Name="Graph" Visibility="Hidden"/>
+        <ScottPlot:WpfPlot Grid.Row="0" Grid.ColumnSpan="5" x:Name="Graph" Visibility="Hidden"/>
 
-        <TextBox Grid.Row="1" Grid.Column="0" x:Name="Date"/>
+        <Label Grid.Row="1" Grid.Column="0" Content="Дата с"/>
+        <TextBox Grid.Row="1" Grid.Column="1" x:Name="FromDate"/>
 
-        <Button Grid.Row="2" Grid.Column="2" Content="Показать график" Click="BuildGraph" Style="{StaticResource btnStyle}"/>
+        <Label Grid.Row="1" Grid.Column="2" Content="Дата до"/>
+        <TextBox Grid.Row="1" Grid.Column="3" x:Name="ToDate"/>
+
+        <Button Grid.Row="2" Grid.Column="4" Content="Показать график" Click="BuildGraph" Style="{StaticResource btnStyle}"/>
 
     </Grid>
 </Window>

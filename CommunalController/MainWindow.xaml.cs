@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -114,9 +115,9 @@ namespace CommunalController
                                 {
                                     IdStorage.Text = reader.GetString(1);
                                     FullName.Text = reader.GetString(2);
-                                    DateCreate.Text = reader.GetString(3);
+                                    DateCreate.Text = ConvertDateToProgramm(reader.GetString(3))[2] + "." + ConvertDateToProgramm(reader.GetString(3))[1] + "." + ConvertDateToProgramm(reader.GetString(3))[0];
                                     Address.Text = reader.GetString(4);
-                                    DatePay.Text = reader.GetString(5);
+                                    DatePay.Text = ConvertDateToProgramm(reader.GetString(5))[2] + "." + ConvertDateToProgramm(reader.GetString(5))[1] + "." + ConvertDateToProgramm(reader.GetString(5))[0];
                                     break;
                                 }
                             }
@@ -145,14 +146,9 @@ namespace CommunalController
 
         private void Button_Add(object sender, RoutedEventArgs e)
         {
-            if (IdStorage.Text == string.Empty  ||
-                FullName.Text == string.Empty   ||
-                Address.Text == string.Empty    ||
-                DateCreate.Text == string.Empty ||
-                DatePay.Text == string.Empty    ||
-                comView.ComInfo.Count == 0)
+            if (!Validate() || IdReceipt.Ids.IndexOf(IdStorage.Text) >= 0)
             {
-                MessageBox.Show("Поля пустые", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
+                MessageBox.Show("Неверно заполненные поля", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.None);
                 return;
             }
 
@@ -165,12 +161,12 @@ namespace CommunalController
                 SqliteCommand command = connection.CreateCommand();
                 command.Connection = connection;
                 command.CommandText = $"INSERT INTO IdReceipts (receipts) VALUES (\"{IdStorage.Text}\");" +
-                                      $"INSERT INTO Person (IdStorage, FullName, DateCreate, Address, PayData) VALUES (\"{IdStorage.Text}\", \"{FullName.Text}\", \"{DateCreate.Text}\", \"{Address.Text}\", \"{DatePay.Text}\");";
+                                      $"INSERT INTO Person (IdStorage, FullName, DateCreate, Address, PayData) VALUES (\"{IdStorage.Text}\", \"{FullName.Text}\", \"{ConvertDateToSql(DateCreate.Text)[2]}-{ConvertDateToSql(DateCreate.Text)[1]}-{ConvertDateToSql(DateCreate.Text)[0]}\", \"{Address.Text}\", \"{ConvertDateToSql(DatePay.Text)[2]}-{ConvertDateToSql(DatePay.Text)[1]}-{ConvertDateToSql(DatePay.Text)[0]}\");";
                 
                 command.ExecuteNonQuery();
                 for (int i = 0; i < comView.ComInfo.Count; i++)
                 {
-                    command.CommandText = $"INSERT INTO PaymentInfo (IdStorage, Type, Size, Rate, Accrued, PayDate) VALUES (\"{IdStorage.Text}\", \"{comView.ComInfo[i].TypeOfPayment}\", {comView.ComInfo[i].Size}, {comView.ComInfo[i].Rate}, {comView.ComInfo[i].Accrued}, \"{DatePay.Text}\");";
+                    command.CommandText = $"INSERT INTO PaymentInfo (IdStorage, Type, Size, Rate, Accrued, PayDate) VALUES (\"{IdStorage.Text}\", \"{comView.ComInfo[i].TypeOfPayment}\", {comView.ComInfo[i].Size}, {comView.ComInfo[i].Rate}, {comView.ComInfo[i].Accrued}, \"{ConvertDateToSql(DatePay.Text)[2]}-{ConvertDateToSql(DatePay.Text)[1]}-{ConvertDateToSql(DatePay.Text)[0]}\");";
                     command.ExecuteNonQuery();
                 }
             }
@@ -273,6 +269,44 @@ namespace CommunalController
                 command.ExecuteNonQuery();
 
             }
+        }
+    
+        private bool Validate()
+        {
+            DateTime scheduleDate;
+            if (IdStorage.Text == string.Empty ||
+                FullName.Text == string.Empty ||
+                Address.Text == string.Empty ||
+                DateCreate.Text == string.Empty ||
+                DatePay.Text == string.Empty ||
+                comView.ComInfo.Count == 0 ||
+                !DateTime.TryParseExact(DatePay.Text, "dd.MM.yyyy", DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out scheduleDate) ||
+                !DateTime.TryParseExact(DateCreate.Text, "dd.MM.yyyy", DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None, out scheduleDate) ||
+                CountCharInString(DatePay.Text, '.') != 2 ||
+                CountCharInString(DateCreate.Text, '.') != 2
+                )
+            {
+                return false;
+            }
+            
+            
+
+            return true;
+        }
+    
+        private string[] ConvertDateToSql(string date) => date.Split('.');
+
+        private string[] ConvertDateToProgramm(string date) => date.Split('-');
+        
+        private int CountCharInString(string str, char symbol)
+        {
+            int count = 0;
+            for (int i = 0; i < str.Length; i++)
+            {
+                if (str[i] == symbol)
+                    count++;
+            }
+            return count;
         }
     }
 }
